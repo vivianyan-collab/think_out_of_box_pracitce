@@ -31,32 +31,21 @@
         }
     </script>
     <style>
-        .slide-frame {
-            width: 1280px;
-            height: 720px;
-            aspect-ratio: 16 / 9;
-        }
-        /* 紧凑型表格样式，确保8行不滚动 */
-        .compact-table td {
-            padding-top: 6px !important;
-            padding-bottom: 6px !important;
-        }
-        .compact-input {
-            height: 38px !important;
-        }
+        .slide-frame { width: 1280px; height: 720px; aspect-ratio: 16 / 9; }
+        .compact-table td { padding-top: 6px !important; padding-bottom: 6px !important; }
+        .compact-input { height: 38px !important; }
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
 
         /* ==========================================================================
-           💎 完美 PDF 打印与导出样式表 (彻底攻克内容重叠、错位与首页空白页天坑)
+           💎 完美 PDF 打印与导出样式表 (支持 14 页版)
            ========================================================================== */
         @media print {
             @page {
-                size: A4 portrait; /* 纵向打印，最契合多内容流式跨页排版，体验最佳 */
+                size: A4 portrait;
                 margin: 15mm 10mm 15mm 10mm;
             }
 
-            /* 1. 彻底打破 Flex 和 Grid 限制，让所有内容回归最基础、稳定的 Block 流水布局 */
             html, body {
                 display: block !important;
                 background: white !important;
@@ -68,7 +57,6 @@
                 overflow: visible !important;
             }
 
-            /* 2. 自动隐藏非打印的多余网页 UI */
             #print-hide-header, 
             #print-hide-footer, 
             #ai-toast,
@@ -76,7 +64,6 @@
                 display: none !important;
             }
 
-            /* 3. 让外框框架变成普通 Block，彻底释放定高限制 */
             .slide-frame {
                 display: block !important;
                 position: static !important;
@@ -97,26 +84,24 @@
                 overflow: visible !important;
             }
 
-            /* 4. 打印时强制只展示第 12 页（总结报告） */
+            /* 仅显示第 14 页（总结报告） */
             .slide-content {
                 display: none !important;
             }
-            #slide-12 {
+            #slide-14 {
                 display: block !important;
                 height: auto !important;
                 overflow: visible !important;
                 padding: 0 !important;
             }
 
-            /* 5. 核心关键：将原本并行的双栏 Grid 转换为一栏 Block 平铺流，彻底解决左右不均和分页重叠 */
-            #slide-12 .grid {
+            #slide-14 .grid {
                 display: block !important;
                 width: 100% !important;
                 height: auto !important;
             }
 
-            /* 6. 让左右两个大半栏转换为纵向依次向下平铺 */
-            #slide-12 .col-span-6 {
+            #slide-14 .col-span-6 {
                 display: block !important;
                 width: 100% !important;
                 height: auto !important;
@@ -125,12 +110,11 @@
                 margin-bottom: 20px !important;
             }
 
-            /* 7. 彻底解除右栏所有定高、最大高度和隐藏滚动属性，防止文字被物理截断 */
-            #slide-12 .max-h-\[460px\],
-            #slide-12 .h-\[380px\],
-            #slide-12 .max-h-32,
-            #slide-12 .overflow-hidden,
-            #slide-12 .overflow-y-auto,
+            #slide-14 .max-h-\[460px\],
+            #slide-14 .h-\[380px\],
+            #slide-14 .max-h-32,
+            #slide-14 .overflow-hidden,
+            #slide-14 .overflow-y-auto,
             #rep-trigger-results,
             #rep-actions,
             #rep-roles {
@@ -140,8 +124,6 @@
                 display: block !important;
             }
 
-            /* 8. 强制每一个小卡片和最小行动列表在分页时保持完整，绝不在卡片中央断开 
-               💡 已经安全移除 .bg-slate-50，彻底解决大容器防截断导致的“第一页空白”天坑 Bug！ */
             #rep-trigger-results > div,
             #rep-actions > div,
             .border-l-4 {
@@ -150,7 +132,6 @@
                 margin-bottom: 12px !important;
             }
 
-            /* 9. 强行在 PDF 里渲染卡片的精致彩底背景（蓝、绿、橙、紫胶囊卡片） */
             * {
                 -webkit-print-color-adjust: exact !important;
                 print-color-adjust: exact !important;
@@ -158,11 +139,11 @@
         }
     </style>
 </head>
-<body class="bg-slate-900 min-h-screen flex flex-col items-center justify-center py-4 text-slate-800">
+<body class="bg-slate-900 min-h-screen flex flex-col items-center justify-center py-4 text-slate-800 font-sans">
 
     <!-- Toast 通知容器 -->
     <div id="ai-toast" class="hidden fixed bottom-6 right-6 bg-red-600 text-white text-sm py-3 px-5 rounded-lg shadow-2xl z-50 flex items-center gap-2 transition-all duration-300">
-        <i class="fa-solid id-toast-icon fa-circle-exclamation"></i>
+        <i class="fa-solid fa-circle-exclamation"></i>
         <span id="ai-toast-msg">错误信息</span>
     </div>
 
@@ -174,7 +155,7 @@
         </div>
         <div class="flex gap-4">
             <button onclick="resetAllData()" class="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-sm font-medium rounded-lg transition border border-slate-700 flex items-center gap-2">
-                <i class="fa-solid fa-arrow-rotate-left"></i> 重置所有输入
+                <i class="fa-solid fa-arrow-rotate-left"></i> 重置所有
             </button>
             <button onclick="exportToPDF()" class="px-4 py-1.5 bg-brand-orange hover:bg-orange-600 text-sm font-bold text-white rounded-lg transition shadow-md flex items-center gap-2">
                 <i class="fa-solid fa-file-pdf"></i> 生成/打印报告
@@ -182,30 +163,24 @@
         </div>
     </div>
 
-    <div class="relative bg-white rounded-2xl shadow-2xl slide-frame overflow-hidden flex flex-col justify-between p-10 transition-all duration-300">
-        
+    <div class="relative bg-white rounded-2xl shadow-2xl slide-frame overflow-hidden flex flex-col justify-between p-10">
         <div class="absolute -top-24 -right-24 w-96 h-96 rounded-full bg-blue-500/5 blur-3xl pointer-events-none"></div>
 
-        <!-- 智能粘贴解析覆盖弹层 (仅存在于 Slide 5 激活时交互) -->
-        <div id="smart-paste-modal" class="hidden absolute inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-30 p-10">
-            <div class="bg-white rounded-xl shadow-2xl p-6 w-[600px] border border-slate-100 flex flex-col gap-4 relative">
-                <button onclick="toggleImportArea(false)" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-                <div>
-                    <h4 class="font-bold text-slate-800 text-base flex items-center gap-2"><i class="fa-solid fa-paste text-brand-orange"></i> 智能粘贴解析器</h4>
-                    <p class="text-xs text-slate-400 mt-1">请直接在下方粘贴你从 AI 助手（如 ChatGPT、Claude、Kimi）中复制的隐藏假设回答。系统将自动过滤标号和杂质，一键分列载入矩阵（最高支持8条）。</p>
-                </div>
-                <textarea id="smart-paste-input" class="w-full h-44 p-3 border-2 border-slate-100 rounded-lg text-xs focus:border-brand-blue outline-none resize-none shadow-inner leading-relaxed" placeholder="粘贴多行假设，例如：&#10;1. “四年没有晋升”本身就说明出现了问题。&#10;2. 晋升机会主要由公司和组织决定..."></textarea>
-                <div class="flex justify-end gap-3 text-xs font-bold">
-                    <button onclick="toggleImportArea(false)" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 rounded-lg transition">取消</button>
-                    <button onclick="processSmartPaste()" class="px-5 py-2 bg-brand-orange hover:bg-orange-600 text-white rounded-lg transition shadow-md flex items-center gap-1.5"><i class="fa-solid fa-wand-magic-sparkles"></i> 确认解析并导入</button>
+        <!-- 智能粘贴解析弹层 -->
+        <div id="smart-paste-modal" class="hidden absolute inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-10">
+            <div class="bg-white rounded-xl shadow-2xl p-6 w-[600px] relative">
+                <button onclick="toggleImportArea(false)" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+                <h4 class="font-bold text-slate-800 text-base mb-1 flex items-center gap-2"><i class="fa-solid fa-paste text-brand-orange"></i> 智能粘贴解析器</h4>
+                <p class="text-xs text-slate-400 mb-4">解析时会自动保留正常词汇（如“一个”），仅过滤明显的列表标号（如一、1.）。</p>
+                <textarea id="smart-paste-input" class="w-full h-44 p-3 border-2 border-slate-100 rounded-lg text-xs focus:border-brand-blue outline-none resize-none shadow-inner" placeholder="在此粘贴 AI 扫描出的假设内容..."></textarea>
+                <div class="flex justify-end gap-3 mt-4">
+                    <button onclick="toggleImportArea(false)" class="px-4 py-2 bg-slate-100 text-slate-600 text-xs rounded-lg font-bold">取消</button>
+                    <button onclick="processSmartPaste()" class="px-5 py-2 bg-brand-orange text-white text-xs rounded-lg font-bold shadow-md">确认并导入</button>
                 </div>
             </div>
         </div>
 
         <div class="flex-grow flex flex-col justify-between z-10">
-
             <!-- Slide 1 -->
             <div id="slide-1" class="slide-content h-full flex flex-col justify-center">
                 <div class="max-w-3xl">
@@ -225,32 +200,27 @@
                 <button onclick="goToSlide(3)" class="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-brand-blue font-bold rounded-xl mx-auto transition flex items-center gap-2">进入定义卡片 <i class="fa-solid fa-chevron-right"></i></button>
             </div>
 
-            <!-- Slide 3 -->
+            <!-- Slide 3 (修复：找回漏掉的黄金法则和无用提醒) -->
             <div id="slide-3" class="slide-content h-full hidden flex flex-col justify-between">
                 <div>
-                    <div class="flex justify-between items-center mb-5">
-                        <span class="text-brand-blue font-bold text-lg"><i class="fa-solid fa-pen-to-square mr-2"></i>第一步：写下你面临的问题</span>
-                    </div>
+                    <div class="flex justify-between items-center mb-5"><span class="text-brand-blue font-bold text-lg"><i class="fa-solid fa-pen-to-square mr-2"></i>第一步：写下你面临的问题</span></div>
                     <div class="grid grid-cols-12 gap-8">
-                        <div class="col-span-7 flex flex-col justify-between h-[380px]">
-                            <div class="w-full">
-                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">我的原始问题描述：</label>
-                                <textarea id="input-q1" oninput="saveData('q1', this.value)" class="w-full h-72 p-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-brand-blue focus:outline-none text-base transition shadow-inner leading-relaxed" placeholder="在这里输入你的核心痛点..."></textarea>
-                            </div>
-                        </div>
-                        <div class="col-span-5 bg-slate-50 p-6 rounded-xl border border-slate-100 flex flex-col justify-between h-[380px]">
+                        <div class="col-span-7 h-[380px]"><textarea id="input-q1" oninput="saveData('q1', this.value)" class="w-full h-full p-4 bg-slate-50 border-2 border-slate-200 rounded-xl focus:border-brand-blue outline-none text-base shadow-inner leading-relaxed" placeholder="在这里输入你的核心痛点..."></textarea></div>
+                        <div class="col-span-5 bg-slate-50 p-6 rounded-xl border border-slate-100 h-[380px] flex flex-col justify-center">
                             <div class="space-y-4">
+                                <!-- 找回：黄金法则 -->
                                 <h4 class="font-bold text-slate-700 text-sm flex items-center gap-2 border-b pb-2"><i class="fa-solid fa-clipboard-question text-brand-orange"></i> 好的选题黄金法则</h4>
                                 <div class="space-y-3 text-xs leading-relaxed">
                                     <div class="flex items-start gap-2 text-slate-700"><i class="fa-solid fa-square-check text-emerald-500 mt-0.5"></i><span>我已经为这个问题想了很久。</span></div>
                                     <div class="flex items-start gap-2 text-slate-700"><i class="fa-solid fa-square-check text-emerald-500 mt-0.5"></i><span>用一句话能说清楚：＿＿＿怎么办？</span></div>
                                 </div>
+                                <!-- 找回：完整的警示线 -->
                                 <h4 class="font-bold text-slate-700 text-sm flex items-center gap-2 border-b pb-2 pt-2 text-red-600"><i class="fa-solid fa-ban"></i> 避坑警示线</h4>
                                 <div class="grid grid-cols-1 gap-2 text-[11px] text-slate-500">
-                                    <div><span class="text-red-500 font-bold">❌ 太小</span> 今天中午吃什么？</div>
-                                    <div><span class="text-red-500 font-bold">❌ 太大</span> 我的人生意义是什么？</div>
-                                    <div><span class="text-red-500 font-bold">❌ 太糊</span> 我想变得更好</div>
-                                    <div><span class="text-red-500 font-bold">❌ 无用</span> 公司战略该怎么调整？</div>
+                                    <div><span class="text-red-500 font-bold">❌ 太小：</span> 今天中午吃什么？</div>
+                                    <div><span class="text-red-500 font-bold">❌ 太大：</span> 我的人生意义是什么？</div>
+                                    <div><span class="text-red-500 font-bold">❌ 太糊：</span> 我想变得更好</div>
+                                    <div><span class="text-red-500 font-bold">❌ 无用：</span> 公司战略该怎么调整？</div>
                                 </div>
                             </div>
                         </div>
@@ -264,7 +234,7 @@
                 <h2 class="text-5xl font-extrabold text-brand-dark mb-4">第二步：识别隐藏假设</h2>
                 <div class="w-24 h-1.5 bg-brand-blue mx-auto mb-6"></div>
                 <p class="text-xl text-slate-500 max-w-2xl mx-auto mb-8">所谓的“盒子”就是你脑中那些未被质疑的规则。你可以借助 AI 教练来帮你快速扫描盲点。</p>
-                <button onclick="goToSlide(5)" class="px-6 py-3 bg-slate-100 hover:bg-slate-200 text-brand-blue font-bold rounded-xl mx-auto transition flex items-center gap-2">进入假设分析卡 <i class="fa-solid fa-chevron-right"></i></button>
+                <button onclick="goToSlide(5)" class="px-6 py-3 bg-slate-100 text-brand-blue font-bold rounded-xl mx-auto flex items-center gap-2">进入假设分析卡 <i class="fa-solid fa-chevron-right"></i></button>
             </div>
 
             <!-- Slide 5 -->
@@ -272,206 +242,252 @@
                 <div class="flex justify-between items-start mb-3">
                     <div>
                         <span class="text-brand-blue font-bold text-lg"><i class="fa-solid fa-border-all mr-2"></i>第二步：识别隐藏假设</span>
-                        <p class="text-slate-400 text-xs mt-1">列出那些你默认“必须满足”的前提。越是理所当然，越有可能是困住你的墙。</p>
                     </div>
-                    <!-- 优化后纯粹、显眼的 AI 引导卡 (去除内置接口，聚焦推荐聊天路径) -->
-                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-center justify-between gap-6 shadow-sm w-[720px] transition-all hover:shadow-md">
+                    <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-center justify-between gap-4 shadow-sm w-[720px]">
                         <div class="text-[11px] leading-relaxed text-blue-800 flex-grow">
-                            <span class="font-bold flex items-center gap-1 text-xs text-brand-blue mb-0.5">
-                                <i class="fa-solid fa-robot"></i> AI 智能助手建议：
-                            </span>
-                            <strong>推荐路径：</strong>一键复制下方专为您的问题调优的教练提示词，去往您常用的 AI（如 ChatGPT、Kimi、Claude、豆包等）中进行深度探讨，这样能获得最深刻的反思、启发与隐藏假设扫描。
+                            <span class="font-bold text-xs text-brand-blue mb-0.5 block"><i class="fa-solid fa-robot"></i> AI 智能教练分析助理：</span>
+                            一键复制专为您的问题定制的深度教练提示词，去往常用 AI 进行深度反思探讨并扫描盲点。
                         </div>
-                        <div class="shrink-0">
-                            <button onclick="copyAIPrompt()" class="bg-brand-blue hover:bg-blue-700 text-white text-xs font-bold py-3 px-5 rounded-lg shadow transition transform hover:-translate-y-0.5 flex items-center gap-1.5">
-                                <i class="fa-solid fa-copy"></i> 一键复制提示词
-                            </button>
-                        </div>
+                        <button onclick="copyAIPrompt()" class="bg-brand-blue hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-4 rounded-lg shrink-0 flex items-center gap-1"><i class="fa-solid fa-copy"></i> 复制提示词</button>
                     </div>
                 </div>
-
                 <div class="flex-grow">
-                    <table class="w-full text-left border-collapse compact-table">
-                        <thead>
-                            <tr class="border-b-2 border-slate-200 text-slate-400 text-[10px] font-bold uppercase tracking-wider">
-                                <th class="pb-2 w-1/12"></th>
-                                <th class="pb-2 w-9/12">识别出的“隐藏假设”</th>
-                                <th class="pb-2 w-1/12 text-center">排序</th>
-                                <th class="pb-2 w-1/12 text-center">操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="assumption-rows" class="divide-y divide-slate-100">
-                            </tbody>
+                    <table class="w-full compact-table">
+                        <thead><tr class="border-b-2 border-slate-200 text-slate-400 text-[10px] font-bold uppercase"><th class="pb-2 w-1/12 text-left"></th><th class="pb-2 w-9/12 text-left">识别出的“隐藏假设”</th><th class="pb-2 w-1/12 text-center">排序</th><th class="pb-2 w-1/12 text-center">操作</th></tr></thead>
+                        <tbody id="assumption-rows" class="divide-y divide-slate-100"></tbody>
                     </table>
                 </div>
-
                 <div class="mt-2 py-2 border-t border-slate-100 flex justify-between items-center">
                     <div class="flex gap-4">
-                        <button id="add-assumption-btn" onclick="addNewAssumptionRow()" class="px-4 py-1.5 bg-slate-100 hover:bg-brand-blue hover:text-white text-brand-blue text-xs font-bold rounded-lg transition flex items-center gap-2">
-                            <i class="fa-solid fa-plus text-[10px]"></i> 添加隐藏假设
-                        </button>
-                        <!-- 📋 唤醒智能粘贴分列面板的按钮 -->
-                        <button onclick="toggleImportArea(true)" class="px-4 py-1.5 bg-emerald-50 border border-emerald-300 text-emerald-700 hover:bg-emerald-600 hover:text-white text-xs font-bold rounded-lg transition flex items-center gap-2">
-                            <i class="fa-solid fa-file-import text-[10px]"></i> 📋 智能粘贴解析
-                        </button>
-                        <span id="assumption-limit-tip" class="text-[10px] text-slate-400 self-center"></span>
+                        <button id="add-assumption-btn" onclick="addNewAssumptionRow()" class="px-4 py-1.5 bg-slate-100 text-brand-blue text-xs font-bold rounded-lg"><i class="fa-solid fa-plus mr-1"></i> 添加</button>
+                        <button onclick="toggleImportArea(true)" class="px-4 py-1.5 bg-emerald-50 border border-emerald-300 text-emerald-700 text-xs font-bold rounded-lg flex items-center gap-1"><i class="fa-solid fa-file-import"></i> 智能粘贴解析</button>
                     </div>
-                    <p class="text-[10px] text-slate-400 italic">建议列出 5-8 条，并把最坚固的那条移到第 1 位（将分析结果手动回填，或使用一键解析）</p>
+                    <span id="assumption-limit-tip" class="text-[10px] text-slate-400 self-center"></span>
                 </div>
             </div>
 
             <!-- Slide 6 -->
             <div id="slide-6" class="slide-content h-full hidden flex flex-col justify-center text-center">
-                <span class="text-brand-orange font-bold text-xs px-2.5 py-1 rounded-full font-bold">Step 03</span>
-                <h2 class="text-5xl font-extrabold text-brand-dark mb-4">打开空间——四个问题打开触发器</h2>
+                <span class="text-brand-orange font-bold text-xl uppercase tracking-wider mb-2">Step 03</span>
+                <h2 class="text-5xl font-extrabold text-brand-dark mb-4">第三步：四个触发器打开思维空间</h2>
                 <div class="w-24 h-1.5 bg-brand-blue mx-auto mb-6"></div>
-                <div class="flex justify-center gap-4">
-                    <button onclick="goToSlide(7)" class="px-6 py-3 bg-brand-blue hover:bg-blue-700 text-white font-bold rounded-xl transition flex items-center gap-2">开始应用 <i class="fa-solid fa-chevron-right"></i></button>
-                </div>
+                <button onclick="goToSlide(7)" class="px-6 py-3 bg-brand-blue text-white font-bold rounded-xl mx-auto flex items-center gap-2">开始应用 <i class="fa-solid fa-chevron-right"></i></button>
             </div>
 
-            <!-- Slide 7 -->
+            <!-- ================== 重构：四个触发器一页一个，极致开阔视野 ================== -->
+            
+            <!-- Slide 7: 触发器 1 - 思路反转 -->
             <div id="slide-7" class="slide-content h-full hidden flex flex-col justify-between">
                 <div>
-                    <div class="flex justify-between items-center mb-5"><span class="text-brand-blue font-bold text-lg"><i class="fa-solid fa-toolbox mr-2"></i>打开触发器：思路反转&盲盒抽卡</span></div>
-                    <div class="grid grid-cols-2 gap-8">
-                        <!-- 思路反转 -->
-                        <div class="bg-blue-50/50 p-6 rounded-2xl border border-blue-100/50 h-[390px]">
-                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-2"><i class="fa-solid fa-arrows-rotate text-brand-blue"></i> 1. 思路反转</h3>
-                            <p class="text-xs text-slate-600 mb-2 leading-relaxed">正向不通就反着问。方法：找到假设→反转→写答案→重写问题</p>
-                            <!-- 💡 替换为全新的多场景提示案例，包含第一层、第二层逻辑分析 -->
-                            <textarea id="input-brain-reverse" oninput="saveData('brain_reverse', this.value)" class="w-full h-56 p-3 bg-white border border-slate-200 rounded-lg text-sm focus:border-brand-blue focus:outline-none transition leading-relaxed" placeholder="【应用案例参考】&#10;💡 第一层（逆向思考）：&#10;- 问题：怎么让培训现场大家多多参与？ ➡️ 反转：怎么让培训课让人昏昏欲睡？&#10;- 问题：怎么解决职业瓶颈期的迷茫？ ➡️ 反转：怎么让人一直维持在迷茫的状态？&#10;&#10;💡 第二层（挑战目标假设）：&#10;- 问题：怎么让培训现场大家多多参与？&#10;- 识别假设：默认“多多参与”是培训的核心目标。&#10;- 破壁提问：如果培训现场多多参与了，仍然被学员吐槽，被sponsor（发起者）定义为失败的培训，会是因为什么？"></textarea>
-                        </div>
-                        <!-- 盲盒抽卡 -->
-                        <div class="bg-emerald-50/50 p-5 rounded-2xl border border-emerald-100/50 h-[390px] flex flex-col justify-between">
-                            <div class="flex justify-between mb-1 shrink-0">
-                                <h3 class="text-base font-bold text-slate-800 flex items-center gap-2"><i class="fa-solid fa-dice text-emerald-600"></i> 2. 盲盒抽卡</h3>
-                                <button onclick="drawRandomCard()" class="text-[10px] bg-emerald-600 text-white px-2 py-1 rounded shadow-sm">点击获得灵感</button>
-                            </div>
-                            <div id="card-display" class="bg-white border-2 border-dashed border-emerald-300 rounded-lg p-1.5 text-center text-emerald-800 font-bold text-xs mb-2 shadow-inner shrink-0">点击随机抽取灵感</div>
+                    <div class="flex justify-between items-center mb-5"><span class="text-brand-blue font-bold text-lg"><i class="fa-solid fa-arrows-rotate mr-2"></i>触发器 1：思路反转 (Reverse Thinking)</span></div>
+                    <div class="grid grid-cols-12 gap-8">
+                        <div class="col-span-5 bg-blue-50/50 p-6 rounded-2xl border border-blue-100 h-[420px] flex flex-col justify-start">
+                            <h3 class="font-bold text-blue-900 text-base mb-2">🤔 操作指南</h3>
+                            <p class="text-xs text-blue-800 mb-6 leading-relaxed">正向不通就反着问。方法：找到假设 ➜ 反转目标 ➜ 写答案 ➜ 重写问题</p>
                             
-                            <!-- 🛠️ 彻底解决空白排版的文本框，让创意关联的文本框用占位符引导并撑满全部空间 -->
-                            <div class="space-y-2 flex-grow flex flex-col justify-between h-[250px]">
-                                <div class="shrink-0">
-                                    <label class="block text-[10px] font-bold text-slate-500 mb-0.5">① 写下该名词联想到的 8~10 个特征：</label>
-                                    <input type="text" id="input-brain-card-traits" oninput="saveData('brain_card_traits', this.value)" class="w-full h-8 px-2 bg-white border border-slate-200 rounded text-xs focus:border-brand-blue focus:outline-none shadow-inner" placeholder="如折叠、小巧、多功能、金属、带剪刀、应急...">
-                                </div>
-                                <div class="flex-grow flex flex-col">
-                                    <label class="block text-[10px] font-bold text-slate-500 mb-0.5">② 关联原始问题（写下你想到的新关联与创意解法）：</label>
-                                    <textarea id="input-brain-card-assoc" oninput="saveData('brain_card_assoc', this.value)" class="w-full flex-grow p-2 bg-white border border-slate-200 rounded text-xs focus:border-brand-blue focus:outline-none resize-none leading-relaxed" placeholder="【应用案例参考】&#10;💡 瑞士军刀 ➡️ 关联‘新员工入职繁琐卡点’：能否将入职培训折叠成极简的应急口袋本？&#10;💡 蹦蹦床 ➡️ 关联‘背记单词’：能否利用蹦床弹性节奏趣味念单词，摆脱死记硬背？&#10;&#10;在此写下你的创意关联与解法..."></textarea>
-                                </div>
+                            <h3 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-lightbulb text-brand-orange"></i> 启发案例参考</h3>
+                            <div class="space-y-3 text-xs text-slate-600 leading-relaxed bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex-grow overflow-y-auto">
+                                <p><strong>💡 第一层（逆向思考）：</strong><br>
+                                - 问：怎么让培训现场大家多多参与？<br>
+                                ➡️ <strong>反转：</strong>怎么让培训课让人昏昏欲睡？<br>
+                                - 问：怎么解决职业瓶颈期的迷茫？<br>
+                                ➡️ <strong>反转：</strong>怎么让人一直维持在迷茫的状态？</p>
+                                <div class="border-t border-slate-100 my-2"></div>
+                                <p><strong>💡 第二层（挑战目标假设）：</strong><br>
+                                - 问：怎么让培训现场大家多多参与？<br>
+                                - 识别假设：默认“多多参与”是培训的核心目标。<br>
+                                - <strong>破壁提问：</strong>如果培训现场多多参与了，仍然被学员吐槽，被发起者定义为失败的培训，会是因为什么？</p>
                             </div>
+                        </div>
+                        <div class="col-span-7 h-[420px]">
+                            <textarea id="input-brain-reverse" oninput="saveData('brain_reverse', this.value)" class="w-full h-full p-6 bg-white border border-slate-200 rounded-2xl text-sm focus:border-brand-blue outline-none shadow-inner leading-relaxed transition" placeholder="在这里写下你的思路反转过程和破壁提问..."></textarea>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Slide 8 -->
+            <!-- Slide 8: 触发器 2 - 盲盒抽卡 -->
             <div id="slide-8" class="slide-content h-full hidden flex flex-col justify-between">
                 <div>
-                    <div class="flex justify-between items-center mb-5"><span class="text-brand-blue font-bold text-lg"><i class="fa-solid fa-toolbox mr-2"></i>脑暴卡 B：角色切换 & 拿掉假设</span></div>
-                    <div class="grid grid-cols-2 gap-8">
-                        <!-- 角色切换 -->
-                        <div class="bg-orange-50/50 p-5 rounded-2xl border border-orange-100/50 h-[400px] flex flex-col">
-                            <div class="flex justify-between items-center mb-1">
-                                <h3 class="text-base font-bold text-slate-800"><i class="fa-solid fa-user-astronaut text-brand-orange"></i> 3. 角色切换</h3>
-                                <p class="text-[10px] text-slate-500">换个位置重新定义。</p>
-                            </div>
-                            <div class="flex border-b border-orange-200 mb-2 gap-1 text-[10px]">
-                                <button onclick="switchRoleTab(0)" id="role-tab-0" class="py-1 px-2 font-bold border-b-2 border-brand-orange text-brand-orange">角色一</button>
-                                <button onclick="switchRoleTab(1)" id="role-tab-1" class="py-1 px-2 border-b-2 border-transparent text-slate-400">角色二</button>
-                                <button onclick="switchRoleTab(2)" id="role-tab-2" class="py-1 px-2 border-b-2 border-transparent text-slate-400">角色三</button>
+                    <div class="flex justify-between items-center mb-5"><span class="text-brand-blue font-bold text-lg"><i class="fa-solid fa-dice mr-2"></i>触发器 2：盲盒抽卡 (Random Inspiration)</span></div>
+                    <div class="grid grid-cols-12 gap-8">
+                        <div class="col-span-5 bg-emerald-50/50 p-6 rounded-2xl border border-emerald-100 h-[420px] flex flex-col">
+                            <h3 class="font-bold text-emerald-900 text-base mb-2">🎲 盲盒机制</h3>
+                            <p class="text-xs text-emerald-800 mb-4 leading-relaxed">随机抽取一个毫不相干的物品，强行提取它的特征，并将其与你的问题进行“跨界融合”。</p>
+                            
+                            <div class="mb-4">
+                                <button onclick="drawRandomCard()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 rounded-xl shadow-md transition flex justify-center items-center gap-2">
+                                    <i class="fa-solid fa-hand-sparkles"></i> 点击抽取随机灵感
+                                </button>
+                                <div id="card-display" class="mt-3 bg-white border-2 border-dashed border-emerald-300 rounded-xl p-4 text-center text-emerald-800 font-bold text-lg shadow-inner">尚未抽卡</div>
                             </div>
                             
-                            <div class="space-y-2 flex-grow flex flex-col justify-between">
-                                <div class="flex justify-between items-center gap-2">
-                                    <div class="grid grid-cols-2 gap-2 flex-grow">
-                                        <select id="role-select-preset" onchange="onRolePresetChange(this.value)" class="text-xs bg-white border border-slate-200 rounded p-1 shadow-sm outline-none focus:border-brand-orange">
-                                            <option value="">选择维度</option>
-                                            <option value="客户">客户</option>
-                                            <option value="利益相关者">利益相关者</option>
-                                            <option value="对我最重要的人">对我最重要的人</option>
-                                            <option value="我的偶像/精神icon">我的偶像/精神icon</option>
-                                        </select>
-                                        <input type="text" id="role-name-input" oninput="onRoleNameInput(this.value)" class="text-xs border border-slate-200 rounded p-1 outline-none focus:border-brand-orange" placeholder="具体人名">
-                                    </div>
-                                    <!-- 📋 一键复制角色代入提示词按钮，增加了提示注意事项的悬浮 title 气泡 -->
-                                    <button id="copy-role-prompt-btn" onclick="copyRolePrompt()" class="bg-brand-blue hover:bg-blue-700 text-white text-[11px] font-bold py-1.5 px-3 rounded shadow transition shrink-0 flex items-center gap-1" title="📋 注意事项：复制提示词后，请在与前几步分析假设相同的一个 AI 对话框（同一个 Agent）内发送讨论，让上下文保持连贯。">
-                                        <i class="fa-solid fa-copy"></i> 复制提示词
-                                    </button>
-                                </div>
-                                <div class="flex-grow flex flex-col mt-1">
-                                    <label class="block text-[10px] text-slate-400 font-bold mb-1">他/她重新写的问题是：</label>
-                                    <!-- 💡 增加了更易理解和借鉴的多场景启发案例 -->
-                                    <textarea id="role-question-textarea" oninput="onRoleQuestionInput(this.value)" class="w-full flex-grow p-2 bg-white border border-slate-200 rounded text-xs focus:border-brand-orange focus:outline-none resize-none h-32 leading-relaxed" placeholder="【应用案例参考】&#10;💡 代入 利益相关者-产品经理：&#10;“从产品经理的角度，真正的问题是：我们如何通过轻量化流程机制，让新用户在开屏 3 秒内就获得最直观的核心价值和爽感？”&#10;💡 代入 对我最重要的人-我的母亲：&#10;“从爱护你的家人的角度，真正的问题是：如何确保你的事业发展不要过多吞噬你和家人吃热乎晚饭以及陪伴的健康时间？”"></textarea>
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex-grow">
+                                <h3 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-lightbulb text-brand-orange"></i> 强行关联案例</h3>
+                                <div class="text-xs text-slate-600 leading-relaxed space-y-2">
+                                    <p><strong>💡 瑞士军刀 ➡️ 关联‘新员工入职繁琐卡点’：</strong>能否将入职培训“折叠”成极简的应急口袋指南？</p>
+                                    <p><strong>💡 蹦蹦床 ➡️ 关联‘背记单词’：</strong>能否利用蹦床弹性节奏趣味大声念出单词，摆脱死记硬背？</p>
                                 </div>
                             </div>
                         </div>
-                        <!-- 拿掉假设 -->
-                        <div class="bg-purple-50/50 p-6 rounded-2xl border border-purple-100/50 h-[400px]">
-                            <h3 class="text-lg font-bold text-slate-800 flex items-center gap-2 mb-1"><i class="fa-solid fa-eraser text-purple-700"></i> 4. 拿掉假设</h3>
-                            <p class="text-xs text-purple-800 font-medium mb-3">去掉最“理所当然”的那堵墙，看看会发生什么。</p>
-                            <!-- 💡 替换为全新的晋升、减肥案例提示词（移除旧流程决策等案例） -->
-                            <textarea id="input-brain-copy" oninput="saveData('brain_copy', this.value)" class="w-full h-64 p-3 border border-slate-200 rounded-lg text-sm focus:border-brand-blue focus:outline-none leading-relaxed" placeholder="【应用案例参考】&#10;💡 案例1（职场路径）：&#10;- 原始问题：4年没晋升，我该办法？&#10;- 最坚信假设：晋升是职业发展的最好证明。&#10;- 拿掉后新思考：如果晋升不是职业发展的最好证明呢？那什么是？&#10;- 重塑新问题：我为什么需要证明我的职业发展？还有什么其他内容可以证明吗？&#10;&#10;💡 案例2（身体健康）：&#10;- 原始问题：我减肥了很久，最近一直没有变化怎么办？&#10;- 最坚信假设：身体没有继续变瘦，意味着成长和进步也停止了。&#10;- 拿掉后新思考：我为了什么而运动，是掌控感吗？是成就感吗？为什么我会需要掌控感？其他地方能给我吗？"></textarea>
+                        <div class="col-span-7 flex flex-col gap-4 h-[420px]">
+                            <div class="shrink-0">
+                                <label class="block text-sm font-bold text-slate-600 mb-2">① 写下抽中名词的 8~10 个属性特征：</label>
+                                <input type="text" id="input-brain-card-traits" oninput="saveData('brain_card_traits', this.value)" class="w-full px-4 py-3 bg-white border border-slate-200 rounded-xl text-sm focus:border-brand-blue outline-none shadow-inner" placeholder="如折叠、小巧、多功能、金属、带剪刀、应急...">
+                            </div>
+                            <div class="flex-grow flex flex-col">
+                                <label class="block text-sm font-bold text-slate-600 mb-2">② 跨界融合（写下你的新关联与创意解法）：</label>
+                                <textarea id="input-brain-card-assoc" oninput="saveData('brain_card_assoc', this.value)" class="w-full flex-grow p-4 bg-white border border-slate-200 rounded-xl text-sm focus:border-brand-blue outline-none resize-none shadow-inner leading-relaxed" placeholder="在此写下你的创意关联与解法..."></textarea>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Slide 9 -->
-            <div id="slide-9" class="slide-content h-full hidden flex flex-col justify-center text-center">
-                <span class="text-brand-orange font-bold text-xs px-2.5 py-1 rounded-full font-bold">Step 04</span>
-                <h2 class="text-5xl font-extrabold text-brand-dark mb-4">第四步：重塑全新问题</h2>
-                <div class="w-24 h-1.5 bg-brand-blue mx-auto mb-6"></div>
-                <button onclick="goToSlide(10)" class="px-6 py-3 bg-brand-blue text-white font-bold rounded-xl mx-auto transition flex items-center gap-2">定义新视角 <i class="fa-solid fa-chevron-right"></i></button>
+            <!-- Slide 9: 触发器 3 - 角色切换 -->
+            <div id="slide-9" class="slide-content h-full hidden flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-5"><span class="text-brand-blue font-bold text-lg"><i class="fa-solid fa-user-astronaut mr-2"></i>触发器 3：角色切换 (Role Play)</span></div>
+                    <div class="grid grid-cols-12 gap-8">
+                        <div class="col-span-5 bg-orange-50/50 p-6 rounded-2xl border border-orange-100 h-[420px] flex flex-col">
+                            <h3 class="font-bold text-orange-900 text-base mb-2">🎭 他者视角代入</h3>
+                            <p class="text-xs text-orange-800 mb-4 leading-relaxed">换个位置重新定义。借助 AI，让不同利益相关者来“审视”你的瓶颈。</p>
+                            
+                            <div class="flex border-b border-orange-200 mb-4 gap-2 text-xs">
+                                <button onclick="switchRoleTab(0)" id="role-tab-0" class="py-2 px-3 font-bold border-b-2 border-brand-orange text-brand-orange">角色一</button>
+                                <button onclick="switchRoleTab(1)" id="role-tab-1" class="py-2 px-3 border-b-2 border-transparent text-slate-400">角色二</button>
+                                <button onclick="switchRoleTab(2)" id="role-tab-2" class="py-2 px-3 border-b-2 border-transparent text-slate-400">角色三</button>
+                            </div>
+                            
+                            <div class="flex flex-col gap-3 mb-6">
+                                <label class="text-xs font-bold text-slate-500">配置您要代入的角色：</label>
+                                <div class="flex gap-2">
+                                    <select id="role-select-preset" onchange="onRolePresetChange(this.value)" class="text-xs bg-white border border-slate-200 rounded-lg p-2 flex-1 outline-none focus:border-brand-orange shadow-sm"><option value="">选择维度</option><option value="客户">客户</option><option value="利益相关者">利益相关者</option><option value="对我最重要的人">对我最重要的人</option><option value="我的偶像/精神icon">我的偶像/精神icon</option></select>
+                                    <input type="text" id="role-name-input" oninput="onRoleNameInput(this.value)" class="text-xs border border-slate-200 rounded-lg p-2 flex-1 outline-none focus:border-brand-orange shadow-sm" placeholder="填入人名/职位">
+                                </div>
+                                <button id="copy-role-prompt-btn" onclick="copyRolePrompt()" class="w-full bg-brand-blue hover:bg-blue-700 text-white text-xs font-bold py-2.5 rounded-lg shadow transition flex justify-center items-center gap-2 mt-1">
+                                    <i class="fa-solid fa-copy"></i> 复制专属代入提示词给 AI
+                                </button>
+                                <p class="text-[10px] text-slate-400 text-center">💡 建议在之前的 AI 对话框内发送，保持上下文连贯。</p>
+                            </div>
+
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex-grow overflow-y-auto">
+                                <h3 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-lightbulb text-brand-orange"></i> 视角重构案例</h3>
+                                <div class="text-xs text-slate-600 leading-relaxed space-y-2">
+                                    <p><strong>💡 代入 利益相关者-产品经理：</strong>“从产品经理的角度，真正的问题是：我们如何通过轻量化流程，让新用户在开屏 3 秒内就获得爽感？”</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-span-7 h-[420px] flex flex-col">
+                            <label class="block text-sm font-bold text-slate-600 mb-2">他/她重新写的问题是（填入 AI 洞察结果）：</label>
+                            <textarea id="role-question-textarea" oninput="onRoleQuestionInput(this.value)" class="w-full flex-grow p-6 bg-white border border-slate-200 rounded-2xl text-sm outline-none focus:border-brand-orange shadow-inner leading-relaxed transition" placeholder="从＿＿的角度，真正的问题是：＿＿＿？"></textarea>
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Slide 10 -->
+            <!-- Slide 10: 触发器 4 - 拿掉假设 -->
             <div id="slide-10" class="slide-content h-full hidden flex flex-col justify-between">
                 <div>
-                    <div class="flex justify-between items-center mb-4"><span class="text-brand-blue font-bold text-lg"><i class="fa-solid fa-crop-simple mr-2"></i>第四步：重构后的新视角问题</span></div>
-                    
-                    <!-- 原始问题对照区 (不可编辑) -->
-                    <div class="mb-4 p-3.5 bg-slate-100/80 rounded-xl border border-slate-200 text-xs">
-                        <span class="font-bold text-slate-600 block mb-1"><i class="fa-solid fa-eye mr-1"></i> 我的原始问题（练习前对照）：</span>
-                        <div id="slide10-raw-question" class="text-slate-500 italic whitespace-pre-wrap">尚未输入具体问题，请返回第一步填写。</div>
-                    </div>
+                    <div class="flex justify-between items-center mb-5"><span class="text-brand-blue font-bold text-lg"><i class="fa-solid fa-eraser mr-2"></i>触发器 4：拿掉假设 (Drop the Assumption)</span></div>
+                    <div class="grid grid-cols-12 gap-8">
+                        <div class="col-span-5 bg-purple-50/50 p-6 rounded-2xl border border-purple-100 h-[420px] flex flex-col">
+                            <h3 class="font-bold text-purple-900 text-base mb-2">🧱 拆除思维的墙</h3>
+                            <p class="text-xs text-purple-800 mb-4 leading-relaxed">去掉你最“理所当然”的那堵墙，看看会发生什么。</p>
+                            
+                            <!-- 💡 联动：Top 1-3 核心假设面板 -->
+                            <div class="bg-white p-4 rounded-xl border border-purple-200 shadow-sm mb-4">
+                                <span class="text-xs font-bold text-purple-800 block mb-2"><i class="fa-solid fa-circle-exclamation"></i> 你的 Top 1-3 核心假设（思维锚点）：</span>
+                                <div id="ref-assumptions-list" class="text-[11px] text-slate-600 space-y-1.5">
+                                    <div class="text-slate-300 italic">尚未在第二步填写任何假设</div>
+                                </div>
+                            </div>
 
-                    <div class="space-y-4">
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 mb-1">新问题视角 1 (我将着重解决的新命题)：</label>
-                            <input type="text" id="input-new-q1" oninput="saveData('new_q1', this.value)" class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-lg focus:border-brand-blue text-sm shadow-inner" placeholder="重塑视角 1...">
+                            <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 flex-grow overflow-y-auto">
+                                <h3 class="font-bold text-slate-800 text-sm mb-2"><i class="fa-solid fa-lightbulb text-brand-orange"></i> 应用案例参考</h3>
+                                <div class="text-xs text-slate-600 leading-relaxed space-y-3">
+                                    <p><strong>💡 案例：职场路径</strong><br>
+                                    - 原问题：4年没晋升该怎么办？<br>
+                                    - 坚信假设：晋升是发展的最好证明。<br>
+                                    - <strong>拿掉后：</strong>如果晋升不是最好证明呢？那什么是？<br>
+                                    - 重塑：我为什么需要证明发展？还有什么其他内容可证明？</p>
+                                </div>
+                            </div>
                         </div>
-                        <div>
-                            <label class="block text-xs font-bold text-slate-400 mb-1">备用新视角 2：</label>
-                            <input type="text" id="input-new-q2" oninput="saveData('new_q2', this.value)" class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-lg focus:border-brand-blue text-sm shadow-inner" placeholder="重塑视角 2...">
+                        <div class="col-span-7 h-[420px]">
+                            <textarea id="input-brain-copy" oninput="saveData('brain_copy', this.value)" class="w-full h-full p-6 bg-white border border-slate-200 rounded-2xl text-sm outline-none focus:border-purple-500 shadow-inner leading-relaxed transition" placeholder="基于左侧排在前面的核心假设，如果把它拿掉，你会得出什么新的思考和结论？..."></textarea>
                         </div>
-                    </div>
-                    <div class="mt-4 p-3.5 bg-amber-50 rounded-xl border border-amber-100 flex gap-3 text-xs text-amber-800">
-                        <i class="fa-solid fa-wand-magic-sparkles mt-0.5"></i>
-                        <div>思考一下：解决这两个新命题，是不是比死磕老问题要有效得多？</div>
                     </div>
                 </div>
             </div>
 
-            <!-- Slide 11 -->
-            <div id="slide-11" class="slide-content h-full hidden flex flex-col justify-between">
+            <!-- Slide 11 (原重构准备) -->
+            <div id="slide-11" class="slide-content h-full hidden flex flex-col justify-center text-center">
+                <span class="text-brand-orange font-bold text-xl uppercase tracking-wider mb-2">Step 04</span>
+                <h2 class="text-5xl font-extrabold text-brand-dark mb-4">第四步：重塑全新问题</h2>
+                <div class="w-24 h-1.5 bg-brand-blue mx-auto mb-6"></div>
+                <button onclick="goToSlide(12)" class="px-6 py-3 bg-brand-blue text-white font-bold rounded-xl mx-auto flex items-center gap-2">定义新视角 <i class="fa-solid fa-chevron-right"></i></button>
+            </div>
+
+            <!-- Slide 12 (已完美引入灵感全景图，左右 7:5 排版) -->
+            <div id="slide-12" class="slide-content h-full hidden flex flex-col justify-between">
+                <div>
+                    <div class="flex justify-between items-center mb-4"><span class="text-brand-blue font-bold text-lg font-bold"><i class="fa-solid fa-crop-simple mr-2"></i>第四步：重构后的新视角问题</span></div>
+                    
+                    <div class="grid grid-cols-12 gap-6">
+                        <!-- 左半边：输入与比对区 -->
+                        <div class="col-span-7 flex flex-col gap-4 h-[420px]">
+                            <!-- 原始问题对照区 -->
+                            <div class="p-4 bg-slate-100/80 rounded-xl border border-slate-200 text-sm">
+                                <span class="font-bold text-slate-600 block mb-1"><i class="fa-solid fa-eye mr-1"></i> 我的原始问题（练习前对照）：</span>
+                                <div id="slide12-raw-question" class="text-slate-500 italic whitespace-pre-wrap">尚未输入具体问题，请返回第一步填写。</div>
+                            </div>
+
+                            <div class="space-y-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">新问题视角 1 (我将着重解决的新命题)：</label>
+                                    <input type="text" id="input-new-q1" oninput="saveData('new_q1', this.value)" class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-lg focus:border-brand-blue text-sm shadow-inner" placeholder="从＿＿的角度，如何通过＿＿来解决＿＿？">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-slate-400 mb-1 uppercase">备用新视角 2：</label>
+                                    <input type="text" id="input-new-q2" oninput="saveData('new_q2', this.value)" class="w-full bg-slate-50 border border-slate-200 px-4 py-3 rounded-lg focus:border-brand-blue text-sm shadow-inner" placeholder="重塑视角 2...">
+                                </div>
+                            </div>
+
+                            <div class="p-3 bg-amber-50 rounded-xl border border-amber-100 flex gap-2.5 text-xs text-amber-800 mt-auto">
+                                <i class="fa-solid fa-lightbulb mt-0.5 shrink-0"></i>
+                                <div>思考一下：解决这两个新命题，是不是比死磕老问题要有效得多？</div>
+                            </div>
+                        </div>
+
+                        <!-- 右半边：💡 灵感全景图 (自动代入 4 个触发器) -->
+                        <div class="col-span-5 bg-slate-50 p-5 rounded-xl border border-slate-200 flex flex-col h-[420px]">
+                            <h4 class="font-bold text-slate-700 text-sm flex items-center gap-2 border-b pb-2 mb-3"><i class="fa-solid fa-wand-magic-sparkles text-brand-orange"></i> 灵感全景图 (4个触发器成果汇总)</h4>
+                            <div id="inspiration-panorama" class="flex-grow space-y-3 overflow-y-auto pr-2">
+                                <!-- JS 动态平铺脑暴灵感 -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Slide 13 (原最小行动) -->
+            <div id="slide-13" class="slide-content h-full hidden flex flex-col justify-between">
                 <div>
                     <div class="flex justify-between items-start mb-4">
                         <div>
                             <span class="text-brand-blue font-bold text-lg"><i class="fa-solid fa-rocket mr-2"></i>从"看见空间"到"最小行动"</span>
                             <p class="text-xs text-slate-400 mt-1">请承诺 1-3 项必定能落地的极轻量动作，让改变开始发生。</p>
                         </div>
-                        <!-- 优化后的 行动 AI 智囊引导卡 -->
-                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-center justify-between gap-6 shadow-sm w-[720px] transition-all hover:shadow-md">
+                        <div class="bg-blue-50 border border-blue-200 rounded-xl p-3 flex items-center justify-between gap-6 shadow-sm w-[720px]">
                             <div class="text-[11px] leading-relaxed text-blue-800 flex-grow">
                                 <span class="font-bold flex items-center gap-1 text-xs text-brand-blue mb-0.5">
                                     <i class="fa-solid fa-robot"></i> AI 落地智囊建议：
                                 </span>
-                                <strong>推荐路径：</strong>一键复制精研的落地规划提示词，在大模型中进行推演对话，它将为您打磨最契合您当下精力和资源预算的完美行动计划。
+                                一键复制精研的落地规划提示词，在大模型中进行推演对话，打磨最契合您当下精力和资源预算的行动计划。
                             </div>
                             <div class="shrink-0">
-                                <button onclick="copyActionPrompt()" class="bg-brand-blue hover:bg-blue-700 text-white text-xs font-bold py-3 px-5 rounded-lg shadow transition transform hover:-translate-y-0.5 flex items-center gap-1.5">
+                                <button onclick="copyActionPrompt()" class="bg-brand-blue hover:bg-blue-700 text-white text-xs font-bold py-3 px-5 rounded-lg shadow transition flex items-center gap-1.5">
                                     <i class="fa-solid fa-copy"></i> 一键复制提示词
                                 </button>
                             </div>
@@ -503,13 +519,12 @@
                 </div>
             </div>
 
-            <!-- Slide 12 -->
-            <div id="slide-12" class="slide-content h-full hidden flex flex-col justify-between text-slate-700">
+            <!-- Slide 14 (原总结报告) -->
+            <div id="slide-14" class="slide-content h-full hidden flex flex-col justify-between text-slate-700">
                 <div>
                     <div class="flex justify-between items-center mb-6"><span class="text-brand-blue font-bold text-lg"><i class="fa-solid fa-award mr-2"></i>「跳出思维的盒子」突围练习总结报告</span></div>
                     <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 max-h-[460px] overflow-y-auto space-y-4">
                         <div class="grid grid-cols-12 gap-6">
-                            <!-- 左栏：专注“逻辑跃迁主干” ( col-span-6 ) -->
                             <div class="col-span-6 space-y-3 pr-2 border-r border-slate-200">
                                 <div class="border-l-4 border-brand-blue pl-4">
                                     <h4 class="font-bold text-xs mb-0.5 text-slate-800">【我的原始瓶颈】</h4>
@@ -524,15 +539,10 @@
                                     <ul id="rep-new-qs" class="list-disc list-inside space-y-0.5 text-xs text-slate-600 font-bold"></ul>
                                 </div>
                             </div>
-                            <!-- 右栏：空间打开触发器成果大一统与行动计划 ( col-span-6 ) -->
                             <div class="col-span-6 flex flex-col gap-3 h-[380px] overflow-hidden">
-                                <!-- 💡 空间打开触发器成果汇总卡片 (平行胶囊排列) -->
                                 <div class="bg-white p-3 rounded-xl border border-slate-200 flex-grow flex flex-col min-h-0">
                                     <h5 class="font-bold mb-1.5 text-xs text-slate-800 flex items-center gap-1 shrink-0"><i class="fa-solid fa-lightbulb text-brand-orange"></i> 💡 空间打开触发器成果</h5>
-                                    <!-- 动态渲染容器 -->
-                                    <div id="rep-trigger-results" class="space-y-2 overflow-y-auto pr-1 flex-grow">
-                                        <!-- JS 动态平铺渲染思路反转、盲盒抽卡、角色切换、拿掉假设 -->
-                                    </div>
+                                    <div id="rep-trigger-results" class="space-y-2 overflow-y-auto pr-1 flex-grow"></div>
                                 </div>
                                 <div class="bg-white p-3 rounded-xl border border-slate-200 shrink-0">
                                     <h5 class="font-bold mb-1.5 text-xs text-slate-800 flex items-center gap-1"><i class="fa-solid fa-circle-play text-brand-blue"></i> 🎯 24小时内最小行动</h5>
@@ -545,24 +555,23 @@
             </div>
         </div>
 
-        <div id="print-hide-footer" class="flex justify-between items-center border-t border-slate-100 pt-6 z-10">
+        <div id="print-hide-footer" class="flex justify-between items-center border-t border-slate-100 pt-6">
             <div class="flex items-center gap-4">
-                <span id="slide-num-label" class="text-slate-400 text-sm font-bold font-poppins">01 / 12</span>
-                <div class="w-64 h-2 bg-slate-100 rounded-full overflow-hidden">
-                    <div id="progress-bar-fill" class="h-full bg-brand-blue transition-all duration-300" style="width: 8.33%"></div>
-                </div>
+                <span id="slide-num-label" class="text-slate-400 text-sm font-bold font-poppins">01 / 14</span>
+                <div class="w-64 h-2 bg-slate-100 rounded-full overflow-hidden"><div id="progress-bar-fill" class="h-full bg-brand-blue transition-all duration-300" style="width: 7.14%"></div></div>
             </div>
-            <div class="flex items-center gap-3">
-                <button id="prev-btn" onclick="prevSlide()" class="px-5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-lg transition disabled:opacity-50">上一页</button>
-                <button id="next-btn" onclick="nextSlide()" class="px-5 py-2.5 bg-brand-blue hover:bg-blue-700 text-white font-bold rounded-lg transition">下一页</button>
+            <div class="flex gap-3">
+                <button id="prev-btn" onclick="prevSlide()" class="px-5 py-2.5 bg-slate-100 text-slate-700 font-bold rounded-lg transition disabled:opacity-50">上一页</button>
+                <button id="next-btn" onclick="nextSlide()" class="px-5 py-2.5 bg-brand-blue text-white font-bold rounded-xl transition">下一页</button>
             </div>
         </div>
     </div>
 
-    <!-- 智能粘贴解析覆盖弹层 (仅存在于 Slide 5 激活时交互) -->
+    <!-- 交互逻辑 JS -->
     <script>
+        // 幻灯片总数升级为 14
         let appState = {
-            currentSlide: 1, totalSlides: 12, activeRoleTab: 0,
+            currentSlide: 1, totalSlides: 14, activeRoleTab: 0,
             data: {
                 q1: '', assumptions: [{ box: '' }, { box: '' }],
                 brain_reverse: '', brain_roles: [{ preset: '', name: '', question: '' }, { preset: '', name: '', question: '' }, { preset: '', name: '', question: '' }],
@@ -577,121 +586,142 @@
         const randomCardNouns = ["瑞士军刀", "乐高积木", "回形针", "指南针", "磁铁", "无人机", "3D打印机", "救生圈", "望远镜", "调音台"];
 
         window.onload = function() {
-            const saved = localStorage.getItem('outside_box_workshop_v8');
+            const saved = localStorage.getItem('outside_box_workshop_v10');
             if (saved) {
-                try {
-                    appState.data = JSON.parse(saved);
-                } catch(e) {
-                    console.error("加载数据解析失败，使用默认值");
-                }
+                try { appState.data = JSON.parse(saved); } catch(e) {}
             }
             renderAssumptionMatrix();
-            // 初始化同步 DOM 状态，确保未翻页就点击生成报告时数据能够完整渲染
             syncDataToDOM();
             updateSummaryReport();
             updateSlideUI();
         };
 
-        // 💡 全局 DOM 同步函数：彻底解决翻页、离线、重新加载导致的数据在 HTML 控件中渲染为空的致命 Bug
         function syncDataToDOM() {
-            // 第一步（Slide 3）原始问题
-            const q1El = document.getElementById('input-q1');
-            if (q1El) q1El.value = appState.data.q1 || '';
-
-            // 第三步（Slide 7）思路反转与盲盒抽卡
-            const reverseEl = document.getElementById('input-brain-reverse');
-            if (reverseEl) reverseEl.value = appState.data.brain_reverse || '';
-
-            const traitsEl = document.getElementById('input-brain-card-traits');
-            if (traitsEl) traitsEl.value = appState.data.brain_card_traits || '';
-
-            const assocEl = document.getElementById('input-brain-card-assoc');
-            if (assocEl) assocEl.value = appState.data.brain_card_assoc || '';
-
-            // 第三步（Slide 8）拿掉假设与角色切换
-            const copyEl = document.getElementById('input-brain-copy');
-            if (copyEl) copyEl.value = appState.data.brain_copy || '';
-
-            // 第四步（Slide 10）新视角
-            const newQ1El = document.getElementById('input-new-q1');
-            if (newQ1El) newQ1El.value = appState.data.new_q1 || '';
-
-            const newQ2El = document.getElementById('input-new-q2');
-            if (newQ2El) newQ2El.value = appState.data.new_q2 || '';
-
-            // 第五步（Slide 11）最小行动
-            const act1 = document.getElementById('action-act1');
-            if (act1) act1.value = appState.data.act1 || '';
-            const time1 = document.getElementById('action-time1');
-            if (time1) time1.value = appState.data.time1 || '';
-            const dead1 = document.getElementById('action-dead1');
-            if (dead1) dead1.value = appState.data.dead1 || '';
-
-            const act2 = document.getElementById('action-act2');
-            if (act2) act2.value = appState.data.act2 || '';
-            const time2 = document.getElementById('action-time2');
-            if (time2) time2.value = appState.data.time2 || '';
-            const dead2 = document.getElementById('action-dead2');
-            if (dead2) dead2.value = appState.data.dead2 || '';
-
-            const act3 = document.getElementById('action-act3');
-            if (act3) act3.value = appState.data.act3 || '';
-            const time3 = document.getElementById('action-time3');
-            if (time3) time3.value = appState.data.time3 || '';
-            const dead3 = document.getElementById('action-dead3');
-            if (dead3) dead3.value = appState.data.dead3 || '';
+            const getAndSet = (id, val) => { const el = document.getElementById(id); if (el) el.value = val || ''; };
+            getAndSet('input-q1', appState.data.q1);
+            getAndSet('input-brain-reverse', appState.data.brain_reverse);
+            getAndSet('input-brain-card-traits', appState.data.brain_card_traits);
+            getAndSet('input-brain-card-assoc', appState.data.brain_card_assoc);
+            getAndSet('input-brain-copy', appState.data.brain_copy);
+            getAndSet('input-new-q1', appState.data.new_q1);
+            getAndSet('input-new-q2', appState.data.new_q2);
+            getAndSet('action-act1', appState.data.act1); getAndSet('action-time1', appState.data.time1); getAndSet('action-dead1', appState.data.dead1);
+            getAndSet('action-act2', appState.data.act2); getAndSet('action-time2', appState.data.time2); getAndSet('action-dead2', appState.data.dead2);
+            getAndSet('action-act3', appState.data.act3); getAndSet('action-time3', appState.data.time3); getAndSet('action-dead3', appState.data.dead3);
         }
 
-        // 数据保存
         function saveData(f, v) {
             appState.data[f] = v;
-            localStorage.setItem('outside_box_workshop_v8', JSON.stringify(appState.data));
+            localStorage.setItem('outside_box_workshop_v10', JSON.stringify(appState.data));
             updateSummaryReport();
             
-            // 同步第10页的原始问题显示
+            // 原始问题同步至 Slide 12 对照区
             if (f === 'q1') {
-                const el = document.getElementById('slide10-raw-question');
+                const el = document.getElementById('slide12-raw-question');
                 if (el) el.innerText = v || '尚未输入具体问题，请返回第一步填写。';
             }
         }
 
-        // 幻灯片UI更新
         function updateSlideUI() {
-            // 每次 UI 变更，强行触发一次全局 DOM 与内存双向同步
             syncDataToDOM();
 
             document.querySelectorAll('.slide-content').forEach((el, i) => {
                 if (i+1 === appState.currentSlide) el.classList.remove('hidden');
                 else el.classList.add('hidden');
             });
-            document.getElementById('slide-num-label').innerText = `${String(appState.currentSlide).padStart(2, '0')} / 12`;
-            document.getElementById('progress-bar-fill').style.width = `${(appState.currentSlide/12)*100}%`;
+            document.getElementById('slide-num-label').innerText = `${String(appState.currentSlide).padStart(2, '0')} / 14`;
+            document.getElementById('progress-bar-fill').style.width = `${(appState.currentSlide/14)*100}%`;
             document.getElementById('prev-btn').disabled = appState.currentSlide === 1;
             const nextBtn = document.getElementById('next-btn');
-            if (appState.currentSlide === 12) nextBtn.classList.add('hidden');
+            if (appState.currentSlide === 14) nextBtn.classList.add('hidden');
             else nextBtn.classList.remove('hidden');
             
-            // 每次切到第10页，刷新只读对照文本
-            if (appState.currentSlide === 10) {
-                const el = document.getElementById('slide10-raw-question');
-                if (el) el.innerText = appState.data.q1 || '尚未输入具体问题，请返回第一步填写。';
-            }
-
-            // 切换 Tab 时同步 Slide 8 的视图
-            if (appState.currentSlide === 8) {
+            // 💡 联动 1：切换到 Slide 9 (角色切换) 时同步 Tab 视图
+            if (appState.currentSlide === 9) {
                 switchRoleTab(appState.activeRoleTab);
             }
 
-            if (appState.currentSlide === 12) updateSummaryReport();
+            // 💡 联动 2：切换到 Slide 10 (拿掉假设) 时自动渲染 Top 1-3 核心假设看板
+            if (appState.currentSlide === 10) {
+                const refCont = document.getElementById('ref-assumptions-list');
+                if (refCont) {
+                    const list = appState.data.assumptions.filter(a => a.box && a.box.trim() !== '').slice(0, 3);
+                    refCont.innerHTML = list.length > 0 
+                        ? list.map((a, i) => `<div class="mb-1 last:mb-0"><span class="text-purple-500 font-bold">#${i+1}</span> ${a.box}</div>`).join('') 
+                        : '<div class="text-slate-300 italic">尚未在第二步填写任何假设，建议返回补充。</div>';
+                }
+            }
+
+            // 💡 联动 3：切换到 Slide 12 (重构问题) 时，刷新原始问题与「灵感全景图」
+            if (appState.currentSlide === 12) {
+                const el = document.getElementById('slide12-raw-question');
+                if (el) el.innerText = appState.data.q1 || '尚未输入具体问题，请返回第一步填写。';
+
+                const pano = document.getElementById('inspiration-panorama');
+                if (pano) {
+                    pano.innerHTML = '';
+                    let html = '';
+
+                    if (appState.data.brain_reverse && appState.data.brain_reverse.trim() !== '') {
+                        html += `
+                            <div class="p-2.5 bg-blue-50/80 border border-blue-200 rounded-lg text-xs leading-relaxed">
+                                <span class="font-bold text-blue-800 block mb-1"><i class="fa-solid fa-arrows-rotate"></i> 1. 思路反转：</span>
+                                <div class="text-slate-600 line-clamp-3">${appState.data.brain_reverse}</div>
+                            </div>
+                        `;
+                    }
+
+                    const hasCard = appState.data.brain_card_noun || appState.data.brain_card_traits || appState.data.brain_card_assoc;
+                    if (hasCard) {
+                        html += `
+                            <div class="p-2.5 bg-emerald-50/80 border border-emerald-200 rounded-lg text-xs leading-relaxed">
+                                <span class="font-bold text-emerald-800 block mb-1"><i class="fa-solid fa-dice"></i> 2. 盲盒抽卡：</span>
+                                <div class="text-slate-700 font-medium">卡牌：【${appState.data.brain_card_noun || '未抽取'}】</div>
+                                <div class="text-slate-600 line-clamp-2 mt-0.5"><strong>跨界融合：</strong>${appState.data.brain_card_assoc || '未填写'}</div>
+                            </div>
+                        `;
+                    }
+
+                    const validRoles = (appState.data.brain_roles || []).filter(r => r.preset || r.name || r.question);
+                    if (validRoles.length > 0) {
+                        const roleTexts = validRoles.map(r => `[${r.preset || '角色'}-${r.name || '未命名'}] ${r.question || '未重塑'}`).join(' | ');
+                        html += `
+                            <div class="p-2.5 bg-orange-50/80 border border-orange-200 rounded-lg text-xs leading-relaxed">
+                                <span class="font-bold text-orange-800 block mb-1"><i class="fa-solid fa-user-astronaut"></i> 3. 角色切换：</span>
+                                <div class="text-slate-600 line-clamp-3">${roleTexts}</div>
+                            </div>
+                        `;
+                    }
+
+                    if (appState.data.brain_copy && appState.data.brain_copy.trim() !== '') {
+                        html += `
+                            <div class="p-2.5 bg-purple-50/80 border border-purple-200 rounded-lg text-xs leading-relaxed">
+                                <span class="font-bold text-purple-800 block mb-1"><i class="fa-solid fa-eraser"></i> 4. 拿掉假设：</span>
+                                <div class="text-slate-600 line-clamp-3">${appState.data.brain_copy}</div>
+                            </div>
+                        `;
+                    }
+
+                    pano.innerHTML = html || `
+                        <div class="flex flex-col items-center justify-center h-full text-slate-400 gap-2 py-10">
+                            <i class="fa-solid fa-ghost text-2xl"></i>
+                            <span class="italic text-xs text-center">尚未尝试前面的触发器产生脑暴灵感...</span>
+                        </div>
+                    `;
+                }
+            }
+
+            if (appState.currentSlide === 14) updateSummaryReport();
         }
 
-        function nextSlide() { if(appState.currentSlide < 12) { appState.currentSlide++; updateSlideUI(); } }
+        function nextSlide() { if(appState.currentSlide < 14) { appState.currentSlide++; updateSlideUI(); } }
         function prevSlide() { if(appState.currentSlide > 1) { appState.currentSlide--; updateSlideUI(); } }
         function goToSlide(n) { appState.currentSlide = n; updateSlideUI(); }
 
         // 第二步逻辑：隐藏假设列表渲染
         function renderAssumptionMatrix() {
             const container = document.getElementById('assumption-rows');
+            if (!container) return;
             container.innerHTML = '';
             appState.data.assumptions.forEach((ass, i) => {
                 const tr = document.createElement('tr');
@@ -713,14 +743,16 @@
                 `;
                 container.appendChild(tr);
             });
+            
             const btn = document.getElementById('add-assumption-btn');
             const tip = document.getElementById('assumption-limit-tip');
-            if (appState.data.assumptions.length >= 8) {
-                btn.disabled = true; btn.classList.add('opacity-40');
-                tip.innerHTML = `<span class="text-red-500 font-bold">已达上限</span>`;
-            } else {
-                btn.disabled = false; btn.classList.remove('opacity-40');
-                tip.innerHTML = `(${appState.data.assumptions.length}/8条隐藏假设)`;
+            if (btn) {
+                if (appState.data.assumptions.length >= 8) { btn.disabled = true; btn.classList.add('opacity-40'); } 
+                else { btn.disabled = false; btn.classList.remove('opacity-40'); }
+            }
+            if (tip) {
+                if (appState.data.assumptions.length >= 8) { tip.innerHTML = `<span class="text-red-500 font-bold">已达上限</span>`; } 
+                else { tip.innerHTML = `(${appState.data.assumptions.length}/8条隐藏假设)`; }
             }
         }
 
@@ -733,7 +765,6 @@
             renderAssumptionMatrix(); saveData('assumptions', appState.data.assumptions);
         }
 
-        // 控制智能粘贴解析浮层的显示/隐藏
         function toggleImportArea(show) {
             const modal = document.getElementById('smart-paste-modal');
             if (show) {
@@ -745,7 +776,7 @@
             }
         }
 
-        // 解析并批量导入从 AI 粘贴过来的文本
+        // 💡 修复点：完美的非贪婪过滤正则，完美保留 "一个" 等文字
         function processSmartPaste() {
             const rawText = document.getElementById('smart-paste-input').value;
             if (!rawText.trim()) {
@@ -753,23 +784,28 @@
                 return;
             }
 
-            // 按行切分并清洗数据
             const lines = rawText.split('\n')
                 .map(line => {
-                    // 使用正则自动剔除最开头的序号、圆圈、列表破折号、emoji 符号等
-                    let cleaned = line.replace(/^\s*([0-9一二三四五六七八九十]+\.?|[•\-*🔴🟡🔵🟢▪️▫️]|第\s*[0-9]+\s*条)\s*/g, '');
-                    // 去除首尾的多余引号与空格
+                    let cleaned = line;
+                    // 1. 去除圆点、多媒体符号
+                    cleaned = cleaned.replace(/^\s*([•\-*🔴🟡🔵🟢▪️▫️])\s*/g, '');
+                    // 2. 只有当中文或阿拉伯数字后 紧跟(点、顿号、空格、冒号、右括号) 时，才认为是标号剪切！
+                    cleaned = cleaned.replace(/^\s*([0-9]+|[一二三四五六七八九十]+)([\.\、\s:：\)）])\s*/g, '');
+                    // 3. 去除"第x条"
+                    cleaned = cleaned.replace(/^\s*(第\s*([0-9]+|[一二三四五六七八九十]+)\s*[条点个])\s*/g, '');
+                    // 4. 去除"(1)"
+                    cleaned = cleaned.replace(/^\s*([\(（]([0-9]+|[一二三四五六七八九十]+)[\)）])\s*/g, '');
+                    // 5. 去除首尾引号
                     cleaned = cleaned.trim().replace(/^["'“‘(（]|["'”’）)]$/g, '').trim();
                     return cleaned;
                 })
-                .filter(line => line.length > 0); // 剔除空行
+                .filter(line => line.length > 0);
 
             if (lines.length === 0) {
-                showNotification("未能解析出有效的隐藏假设，请检查粘贴格式。");
+                showNotification("未能解析出有效的假设，请检查格式。");
                 return;
             }
 
-            // 限制最多载入前 8 条
             const finalLines = lines.slice(0, 8);
             appState.data.assumptions = finalLines.map(text => ({ box: text }));
             
@@ -779,7 +815,6 @@
             showNotification("✨ 智能解析成功，已导入隐藏假设！", false);
         }
 
-        // 基础通用复制执行器 (避开 Permissions Policy 限制)
         function executeCopy(textToCopy, btnSelector) {
             const tempTextArea = document.createElement("textarea");
             tempTextArea.value = textToCopy;
@@ -792,11 +827,7 @@
             tempTextArea.select();
             
             let successful = false;
-            try {
-                successful = document.execCommand('copy');
-            } catch (err) {
-                console.error('Fallback: 无法复制内容', err);
-            }
+            try { successful = document.execCommand('copy'); } catch (err) {}
             document.body.removeChild(tempTextArea);
 
             const btn = document.querySelector(btnSelector);
@@ -810,16 +841,11 @@
                     btn.classList.replace('bg-emerald-600', 'bg-brand-blue');
                 }, 2000);
             } else {
-                btn.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> 复制失败`;
-                btn.classList.replace('bg-brand-blue', 'bg-red-600');
-                setTimeout(() => {
-                    btn.innerHTML = originText;
-                    btn.classList.replace('bg-red-600', 'bg-brand-blue');
-                }, 2000);
+                showNotification("复制失败，请重试");
             }
         }
 
-        // 复制 AI 识别提示词
+        // 💡 完整还原提示词 1：假设扫描
         function copyAIPrompt() {
             const userQuestion = appState.data.q1 || "[尚未输入具体问题，请返回第一步填写]";
             const prompt = `你是一个帮我识别思维假设的教练。
@@ -841,7 +867,7 @@
 
 🔵 标准假设（什么叫解决了）
 - 我用什么来衡量"解决了"
-- 这个标准是谁定？为什么 is 这个？
+- 这个标准是谁定？为什么是这个？
 - 换一个度量方式，问题还成立吗？
 
 分析完之后，请做两件事：
@@ -852,13 +878,12 @@
 - 语气直接，不要客套
 - 如果我的问题表述模糊，先提问我，让我想清楚、澄清问题背景再分析。
 
-My issue is:
+我的问题是：
 ${userQuestion}`;
-            
             executeCopy(prompt, 'button[onclick="copyAIPrompt()"]');
         }
 
-        // 💡 修复：角色代入 AI 提示词模板重塑
+        // 💡 完整还原提示词 2：角色代入
         function copyRolePrompt() {
             const r = appState.data.brain_roles[appState.activeRoleTab];
             const userQuestion = appState.data.q1 || "[尚未输入具体问题，请返回第一步填写]";
@@ -872,21 +897,18 @@ ${userQuestion}`;
 原始问题描述：
 【${userQuestion}】
 
-请用这个角色（人物）对于此问题的理解和关注角度，分析他的思考维度 and 关注要点，并提供一个问题，最好是具备探索性的开放式问题
+请用这个角色（人物）对于此问题的理解和关注角度，分析他的思考维度和关注要点，并提供一个问题，最好是具备探索性的开放式问题
 “从＿＿的角度，真正的问题是：＿＿＿？”`;
-
             executeCopy(prompt, '#copy-role-prompt-btn');
         }
 
-        // 第11页复制最小行动提示词
+        // 💡 完整还原提示词 3：最小行动
         function copyActionPrompt() {
             const userNewQuestion = appState.data.new_q1 || "[你尚未在第四步提炼重构新视角Q1，请返回填写]";
-            const actionPrompt = `针对刚才的假设，我有了一个重构问题：【${userNewQuestion}】，帮我整理下我马上（24小时内）可以采取的更具体的行动有什么？这些行动能帮我更好的探索这一新问题。请给我3-5个选项，并简要清晰的说明完成完成这些动作我可能需要付出的成本和获得的收益。`;
-            
+            const actionPrompt = `针对刚才的假设，我有了一个重构问题：【${userNewQuestion}】，帮我整理下我马上（24小时内）可以采取的更具体的行动有什么？这些行动能帮我更好的探索这一新问题。请给我3-5个选项，并简要清晰的说明完成这些动作我可能需要付出的成本和获得的收益。`;
             executeCopy(actionPrompt, 'button[onclick="copyActionPrompt()"]');
         }
 
-        // 盲盒抽卡事件
         function drawRandomCard() {
             const r = randomCardNouns[Math.floor(Math.random() * randomCardNouns.length)];
             appState.data.brain_card_noun = r;
@@ -894,7 +916,6 @@ ${userQuestion}`;
             saveData('brain_card_noun', r);
         }
 
-        // 角色面板切换逻辑
         function switchRoleTab(idx) {
             appState.activeRoleTab = idx;
             for (let i = 0; i < 3; i++) {
@@ -911,13 +932,11 @@ ${userQuestion}`;
         function onRolePresetChange(v) { appState.data.brain_roles[appState.activeRoleTab].preset = v; saveRoleData(); }
         function onRoleNameInput(v) { appState.data.brain_roles[appState.activeRoleTab].name = v; saveRoleData(); }
         function onRoleQuestionInput(v) { appState.data.brain_roles[appState.activeRoleTab].question = v; saveRoleData(); }
-        function saveRoleData() { localStorage.setItem('outside_box_workshop_v8', JSON.stringify(appState.data)); updateSummaryReport(); }
+        function saveRoleData() { localStorage.setItem('outside_box_workshop_v10', JSON.stringify(appState.data)); updateSummaryReport(); }
 
-        // 最终报告生成
         function updateSummaryReport() {
             document.getElementById('rep-q1').innerText = appState.data.q1 || '未填写';
             
-            // 隐藏假设
             const assCont = document.getElementById('rep-assumptions');
             assCont.innerHTML = '';
             appState.data.assumptions.filter(a => a.box).forEach((a, i) => {
@@ -926,90 +945,48 @@ ${userQuestion}`;
                 assCont.appendChild(d);
             });
 
-            // 💡 修复并大一统：将四种平行的创意思维触发器成果渲染在右侧
             const triggerCont = document.getElementById('rep-trigger-results');
             if (triggerCont) {
                 triggerCont.innerHTML = '';
 
-                // --- 1. 思路反转 (蓝底小卡) ---
                 const revCard = document.createElement('div');
                 revCard.className = `p-2 rounded-lg border text-[10px] leading-relaxed ${appState.data.brain_reverse ? 'bg-blue-50 border-blue-200 text-blue-900' : 'bg-slate-50 border-slate-200 text-slate-400'}`;
-                revCard.innerHTML = `
-                    <div class="font-bold flex items-center gap-1 mb-0.5 text-blue-800 ${!appState.data.brain_reverse ? 'text-slate-400' : ''}">
-                        <i class="fa-solid fa-arrows-rotate"></i> 1. 思路反转
-                    </div>
-                    <div class="whitespace-pre-wrap">${appState.data.brain_reverse || '（尚未进行思路反转脑暴）'}</div>
-                `;
+                revCard.innerHTML = `<div class="font-bold flex items-center gap-1 mb-0.5 text-blue-800 ${!appState.data.brain_reverse ? 'text-slate-400' : ''}"><i class="fa-solid fa-arrows-rotate"></i> 1. 思路反转</div><div class="whitespace-pre-wrap">${appState.data.brain_reverse || '（尚未进行思路反转脑暴）'}</div>`;
                 triggerCont.appendChild(revCard);
 
-                // --- 2. 盲盒抽卡 (绿底小卡) ---
                 const hasCardData = appState.data.brain_card_noun || appState.data.brain_card_traits || appState.data.brain_card_assoc;
                 const cardCard = document.createElement('div');
                 cardCard.className = `p-2 rounded-lg border text-[10px] leading-relaxed ${hasCardData ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-slate-50 border-slate-200 text-slate-400'}`;
                 let cardContent = '（尚未进行盲盒抽卡脑暴）';
                 if (hasCardData) {
-                    cardContent = `
-                        <div class="font-medium text-slate-700">🎯 抽中名词：【${appState.data.brain_card_noun || '未抽取'}】</div>
-                        <div class="mt-0.5"><strong>① 特征发散：</strong>${appState.data.brain_card_traits || '未填写'}</div>
-                        <div class="mt-0.5"><strong>② 创意关联：</strong>${appState.data.brain_card_assoc || '未填写'}</div>
-                    `;
+                    cardContent = `<div class="font-medium text-slate-700">🎯 抽中名词：【${appState.data.brain_card_noun || '未抽取'}】</div><div class="mt-0.5"><strong>① 特征发散：</strong>${appState.data.brain_card_traits || '未填写'}</div><div class="mt-0.5"><strong>② 创意关联：</strong>${appState.data.brain_card_assoc || '未填写'}</div>`;
                 }
-                cardCard.innerHTML = `
-                    <div class="font-bold flex items-center gap-1 mb-0.5 text-emerald-800 ${!hasCardData ? 'text-slate-400' : ''}">
-                        <i class="fa-solid fa-dice"></i> 2. 盲盒抽卡
-                    </div>
-                    <div>${cardContent}</div>
-                `;
+                cardCard.innerHTML = `<div class="font-bold flex items-center gap-1 mb-0.5 text-emerald-800 ${!hasCardData ? 'text-slate-400' : ''}"><i class="fa-solid fa-dice"></i> 2. 盲盒抽卡</div><div>${cardContent}</div>`;
                 triggerCont.appendChild(cardCard);
 
-                // --- 3. 角色切换 (橙底小卡 - 聚合展示全部三个已填写启发视角的重构问题) ---
                 const validRoles = (appState.data.brain_roles || []).filter(r => r.preset || r.name || r.question);
                 const roleCard = document.createElement('div');
                 roleCard.className = `p-2 rounded-lg border text-[10px] leading-relaxed ${validRoles.length > 0 ? 'bg-orange-50 border-orange-200 text-orange-900' : 'bg-slate-50 border-slate-200 text-slate-400'}`;
-                
                 let roleContent = '（尚未进行他者角色切换脑暴）';
                 if (validRoles.length > 0) {
                     roleContent = validRoles.map((r, i) => {
-                        let displayName = '';
-                        if (r.preset && r.preset !== 'custom') {
-                            displayName = `我的【${r.preset}】【${r.name || '未命名'}】`;
-                        } else {
-                            displayName = `我的【${r.name || '自定义角色'}】`;
-                        }
-                        return `
-                            <div class="mt-1 first:mt-0 border-b border-dashed border-orange-200/50 last:border-0 pb-1 last:pb-0">
-                                <span class="font-bold text-orange-800">${displayName} 视角：</span>
-                                <span class="italic whitespace-pre-wrap">${r.question || '（尚未输入定义问题）'}</span>
-                            </div>
-                        `;
+                        let displayName = r.preset && r.preset !== 'custom' ? `我的【${r.preset}】【${r.name || '未命名'}】` : `我的【${r.name || '自定义角色'}】`;
+                        return `<div class="mt-1 first:mt-0 border-b border-dashed border-orange-200/50 last:border-0 pb-1 last:pb-0"><span class="font-bold text-orange-800">${displayName} 视角：</span><span class="italic whitespace-pre-wrap">${r.question || '（尚未输入定义问题）'}</span></div>`;
                     }).join('');
                 }
-                roleCard.innerHTML = `
-                    <div class="font-bold flex items-center gap-1 mb-0.5 text-orange-800 ${validRoles.length === 0 ? 'text-slate-400' : ''}">
-                        <i class="fa-solid fa-user-astronaut"></i> 3. 角色切换
-                    </div>
-                    <div>${roleContent}</div>
-                `;
+                roleCard.innerHTML = `<div class="font-bold flex items-center gap-1 mb-0.5 text-orange-800 ${validRoles.length === 0 ? 'text-slate-400' : ''}"><i class="fa-solid fa-user-astronaut"></i> 3. 角色切换</div><div>${roleContent}</div>`;
                 triggerCont.appendChild(roleCard);
 
-                // --- 4. 拿掉假设 (紫底小卡) ---
                 const copyCard = document.createElement('div');
                 copyCard.className = `p-2 rounded-lg border text-[10px] leading-relaxed ${appState.data.brain_copy ? 'bg-purple-50 border-purple-200 text-purple-900' : 'bg-slate-50 border-slate-200 text-slate-400'}`;
-                copyCard.innerHTML = `
-                    <div class="font-bold flex items-center gap-1 mb-0.5 text-purple-800 ${!appState.data.brain_copy ? 'text-slate-400' : ''}">
-                        <i class="fa-solid fa-eraser"></i> 4. 拿掉假设
-                    </div>
-                    <div class="whitespace-pre-wrap">${appState.data.brain_copy || '（尚未进行拿掉假设脑暴）'}</div>
-                `;
+                copyCard.innerHTML = `<div class="font-bold flex items-center gap-1 mb-0.5 text-purple-800 ${!appState.data.brain_copy ? 'text-slate-400' : ''}"><i class="fa-solid fa-eraser"></i> 4. 拿掉假设</div><div class="whitespace-pre-wrap">${appState.data.brain_copy || '（尚未进行拿掉假设脑暴）'}</div>`;
                 triggerCont.appendChild(copyCard);
             }
 
-            // 新问题提炼
             const qCont = document.getElementById('rep-new-qs');
             qCont.innerHTML = '';
             [appState.data.new_q1, appState.data.new_q2].filter(q => q).forEach(q => { const li = document.createElement('li'); li.innerText = q; qCont.appendChild(li); });
 
-            // 成果汇报处增加 3 个最小行动的同步加载与渲染
             const actionCont = document.getElementById('rep-actions');
             actionCont.innerHTML = '';
             const acts = [
@@ -1024,44 +1001,28 @@ ${userQuestion}`;
                 acts.forEach((a, i) => {
                     const row = document.createElement('div');
                     row.className = 'bg-slate-50 border border-slate-100 p-2 rounded-lg text-[10px] leading-tight flex flex-col gap-1';
-                    row.innerHTML = `
-                        <div class="font-bold text-slate-700">行动 ${i+1}: ${a.act}</div>
-                        <div class="text-slate-400 flex justify-between">
-                            <span><i class="fa-solid fa-hourglass-half text-brand-orange"></i> 用时: ${a.time || '-'}</span>
-                            <span><i class="fa-solid fa-clock"></i> 截止: ${a.dead || '-'}</span>
-                        </div>
-                    `;
+                    row.innerHTML = `<div class="font-bold text-slate-700">行动 ${i+1}: ${a.act}</div><div class="text-slate-400 flex justify-between"><span><i class="fa-solid fa-hourglass-half text-brand-orange"></i> 用时: ${a.time || '-'}</span><span><i class="fa-solid fa-clock"></i> 截止: ${a.dead || '-'}</span></div>`;
                     actionCont.appendChild(row);
                 });
             }
         }
 
-        // 清空所有状态
         function resetAllData() {
             if (confirm("确定要清空所有练习数据吗？")) {
-                localStorage.removeItem('outside_box_workshop_v8');
+                localStorage.removeItem('outside_box_workshop_v10');
                 location.reload();
             }
         }
 
-        // 简易通知
         function showNotification(msg, isError = true) {
             const toast = document.getElementById('ai-toast');
-            const msgEl = document.getElementById('ai-toast-msg');
-            msgEl.innerText = msg;
-            if (isError) {
-                toast.classList.replace('bg-emerald-600', 'bg-red-600');
-            } else {
-                toast.classList.replace('bg-red-600', 'bg-emerald-600');
-            }
+            document.getElementById('ai-toast-msg').innerText = msg;
+            if (isError) { toast.classList.replace('bg-emerald-600', 'bg-red-600'); } else { toast.classList.replace('bg-red-600', 'bg-emerald-600'); }
             toast.classList.remove('hidden');
-            setTimeout(() => {
-                toast.classList.add('hidden');
-            }, 4000);
+            setTimeout(() => { toast.classList.add('hidden'); }, 4000);
         }
 
         function exportToPDF() {
-            // 在拉起打印机之前强制同步并渲染一次数据，确保不处于第12页也能打印出完整报告
             syncDataToDOM();
             updateSummaryReport();
             window.print();
