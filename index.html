@@ -664,9 +664,9 @@
 
                     if (appState.data.brain_reverse && appState.data.brain_reverse.trim() !== '') {
                         html += `
-                            <div class="p-2.5 bg-blue-50/80 border border-blue-200 rounded-lg text-xs leading-relaxed">
-                                <span class="font-bold text-blue-800 block mb-1"><i class="fa-solid fa-arrows-rotate"></i> 1. 思路反转：</span>
-                                <div class="text-slate-600 line-clamp-3">${appState.data.brain_reverse}</div>
+                            <div class="p-2.5 bg-blue-50/80 border border-blue-200 rounded-lg text-xs leading-relaxed flex flex-col">
+                                <span class="font-bold text-blue-800 block mb-1 shrink-0"><i class="fa-solid fa-arrows-rotate"></i> 1. 思路反转：</span>
+                                <div class="text-slate-600 max-h-24 overflow-y-auto pr-1 whitespace-pre-wrap break-words">${appState.data.brain_reverse}</div>
                             </div>
                         `;
                     }
@@ -674,30 +674,31 @@
                     const hasCard = appState.data.brain_card_noun || appState.data.brain_card_traits || appState.data.brain_card_assoc;
                     if (hasCard) {
                         html += `
-                            <div class="p-2.5 bg-emerald-50/80 border border-emerald-200 rounded-lg text-xs leading-relaxed">
-                                <span class="font-bold text-emerald-800 block mb-1"><i class="fa-solid fa-dice"></i> 2. 盲盒抽卡：</span>
-                                <div class="text-slate-700 font-medium">卡牌：【${appState.data.brain_card_noun || '未抽取'}】</div>
-                                <div class="text-slate-600 line-clamp-2 mt-0.5"><strong>跨界融合：</strong>${appState.data.brain_card_assoc || '未填写'}</div>
+                            <div class="p-2.5 bg-emerald-50/80 border border-emerald-200 rounded-lg text-xs leading-relaxed flex flex-col">
+                                <span class="font-bold text-emerald-800 block mb-1 shrink-0"><i class="fa-solid fa-dice"></i> 2. 盲盒抽卡：</span>
+                                <div class="text-slate-700 font-medium shrink-0">卡牌：【${appState.data.brain_card_noun || '未抽取'}】</div>
+                                <div class="text-slate-600 max-h-24 overflow-y-auto pr-1 mt-0.5 whitespace-pre-wrap break-words"><strong>跨界融合：</strong>\n${appState.data.brain_card_assoc || '未填写'}</div>
                             </div>
                         `;
                     }
 
                     const validRoles = (appState.data.brain_roles || []).filter(r => r.preset || r.name || r.question);
                     if (validRoles.length > 0) {
-                        const roleTexts = validRoles.map(r => `[${r.preset || '角色'}-${r.name || '未命名'}] ${r.question || '未重塑'}`).join(' | ');
+                        // 角色切换之间用换行分隔，阅读体验更佳
+                        const roleTexts = validRoles.map(r => `[${r.preset || '角色'}-${r.name || '未命名'}]\n${r.question || '未重塑'}`).join('\n\n');
                         html += `
-                            <div class="p-2.5 bg-orange-50/80 border border-orange-200 rounded-lg text-xs leading-relaxed">
-                                <span class="font-bold text-orange-800 block mb-1"><i class="fa-solid fa-user-astronaut"></i> 3. 角色切换：</span>
-                                <div class="text-slate-600 line-clamp-3">${roleTexts}</div>
+                            <div class="p-2.5 bg-orange-50/80 border border-orange-200 rounded-lg text-xs leading-relaxed flex flex-col">
+                                <span class="font-bold text-orange-800 block mb-1 shrink-0"><i class="fa-solid fa-user-astronaut"></i> 3. 角色切换：</span>
+                                <div class="text-slate-600 max-h-24 overflow-y-auto pr-1 whitespace-pre-wrap break-words">${roleTexts}</div>
                             </div>
                         `;
                     }
 
                     if (appState.data.brain_copy && appState.data.brain_copy.trim() !== '') {
                         html += `
-                            <div class="p-2.5 bg-purple-50/80 border border-purple-200 rounded-lg text-xs leading-relaxed">
-                                <span class="font-bold text-purple-800 block mb-1"><i class="fa-solid fa-eraser"></i> 4. 拿掉假设：</span>
-                                <div class="text-slate-600 line-clamp-3">${appState.data.brain_copy}</div>
+                            <div class="p-2.5 bg-purple-50/80 border border-purple-200 rounded-lg text-xs leading-relaxed flex flex-col">
+                                <span class="font-bold text-purple-800 block mb-1 shrink-0"><i class="fa-solid fa-eraser"></i> 4. 拿掉假设：</span>
+                                <div class="text-slate-600 max-h-24 overflow-y-auto pr-1 whitespace-pre-wrap break-words">${appState.data.brain_copy}</div>
                             </div>
                         `;
                     }
